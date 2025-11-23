@@ -45,7 +45,7 @@ def db():
     """Cria um banco de dados limpo para cada teste."""
     # Garantir que as tabelas do serviço de autenticacao existam
     from config.database import Base
-    import auth.model_auth  # pylint: disable=unused-import
+    # import auth.model_auth  # pylint: disable=unused-import
 
     Base.metadata.create_all(bind=engine)
     session = TestingSessionLocal()

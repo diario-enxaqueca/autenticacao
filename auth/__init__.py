@@ -1,1 +1,4 @@
-"""Subpacote auth contendo controller, schemas, views e testes de autenticação."""
+"""
+Subpacote auth contendo controller,
+schemas, views e testes de autenticação.
+"""

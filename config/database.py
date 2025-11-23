@@ -9,7 +9,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # import relativo para o pacote local de config
-from .settings import settings
+from config.settings import settings
+import pymysql
 
 
 # URL de conexão do banco
@@ -18,12 +19,22 @@ DATABASE_URL = (
     f"@{settings.MYSQL_HOST}:{settings.MYSQL_PORT}/{settings.MYSQL_DB}"
 )
 
+# Configura parâmetros extras
+connect_args = {}
+
+# PRODUCTION: SSL required
+if settings.MYSQL_USE_SSL:
+    connect_args["ssl"] = {
+        "ca": settings.MYSQL_SSL_CA
+    }
+
 # Engine do SQLAlchemy
 engine = create_engine(
     DATABASE_URL,
-    pool_pre_ping=True,
-    pool_recycle=3600,
-    echo=settings.DEBUG,
+    pool_pre_ping=True,  # Verifica conexão antes de usar
+    pool_recycle=3600,   # Recicla conexões a cada hora
+    echo=settings.DEBUG,  # Log SQL queries em modo debug
+    connect_args=connect_args
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

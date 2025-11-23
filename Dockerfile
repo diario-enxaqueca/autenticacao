@@ -16,6 +16,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # quando a ferramenta de build calcula checksums)
 COPY . .
 
+COPY ca.pem /app/ca.pem
+
+
 # Instalar dependências a partir do requirements.txt presente no contexto
 # Use `python -m pip` para garantir que o pip usado corresponde ao interpretador
 RUN if [ -f requirements.txt ]; then \

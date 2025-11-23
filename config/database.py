@@ -15,8 +15,7 @@ from .settings import settings
 # URL de conexão do banco
 DATABASE_URL = (
     f"mysql+pymysql://{settings.MYSQL_USER}:{settings.MYSQL_PASSWORD}"
-    f"@{settings.MYSQL_HOST}:{settings.MYSQL_PORT}/"
-    f"{settings.MYSQL_DB}?ssl_mode={settings.MYSQL_SSL}"
+    f"@{settings.MYSQL_HOST}:{settings.MYSQL_PORT}/{settings.MYSQL_DB}"
 )
 
 # Engine do SQLAlchemy

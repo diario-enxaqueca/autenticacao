@@ -37,4 +37,4 @@ WORKDIR /app
 EXPOSE 8001
 
 # Comando padrão: executa o app em autenticacao/main.py
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]

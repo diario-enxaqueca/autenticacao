@@ -10,7 +10,6 @@ from sqlalchemy.orm import sessionmaker
 
 # import relativo para o pacote local de config
 from config.settings import settings
-import pymysql
 
 
 # URL de conexão do banco

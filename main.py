@@ -18,10 +18,15 @@ app = FastAPI(
     debug=settings.DEBUG,
 )
 
+# Configurar origens permitidas para CORS
 origins = [
     "http://localhost:3000",
     "http://frontend",
 ]
+
+# Adicionar URL do frontend de produção se configurado
+if settings.FRONTEND_URL and settings.FRONTEND_URL not in origins:
+    origins.append(settings.FRONTEND_URL)
 
 app.add_middleware(
     CORSMiddleware,

@@ -25,14 +25,15 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 # Configuração do FastMail para envio de email
 conf = ConnectionConfig(
     MAIL_USERNAME=settings.MAIL_USERNAME,  # ex: "seu_email@exemplo.com"
-    MAIL_PASSWORD=settings.MAIL_PASSWORD,  # ex: "sua_senha"
+    MAIL_PASSWORD=settings.MAIL_PASSWORD,  # ex: "sua_senha_de_app"
     MAIL_FROM=settings.MAIL_FROM,          # ex: "seu_email@exemplo.com"
     MAIL_PORT=settings.MAIL_PORT,          # ex: 587
-    MAIL_SERVER=settings.MAIL_SERVER,      # ex: "smtp.exemplo.com"
+    MAIL_SERVER=settings.MAIL_SERVER,      # ex: "smtp.gmail.com"
     MAIL_STARTTLS=settings.MAIL_STARTTLS,
     MAIL_SSL_TLS=settings.MAIL_SSL_TLS,
     USE_CREDENTIALS=True,
     VALIDATE_CERTS=True,
+    TIMEOUT=120,  # Timeout de 120 segundos para ambientes cloud
 )
 
 
@@ -140,17 +141,25 @@ def create_reset_token(email: str):
 
 
 async def send_reset_email(email_to: EmailStr, token: str):
-    reset_url = f"http://localhost:3000/reset-password?token={token}"
-    message = MessageSchema(
-        subject="Recuperação de senha - Diário de Enxaqueca",
-        recipients=[email_to],
-        body="Olá,\n\nPara redefinir sua senha, clique no link abaixo:\n"
-             + f"{reset_url}\n\n"
-             + "Se você não solicitou essa alteração, ignore este email.",
-        subtype="plain"
-    )
-    fm = FastMail(conf)
-    await fm.send_message(message)
+    """Envia email de recuperação de senha com tratamento de erro robusto."""
+    try:
+        reset_url = f"{settings.FRONTEND_URL}/reset-password?token={token}"
+        message = MessageSchema(
+            subject="Recuperação de senha - Diário de Enxaqueca",
+            recipients=[email_to],
+            body="Olá,\n\nPara redefinir sua senha, clique no link abaixo:\n"
+                 + f"{reset_url}\n\n"
+                 + "Este link expira em 30 minutos.\n\n"
+                 + "Se você não solicitou essa alteração, ignore este email.",
+            subtype="plain"
+        )
+        fm = FastMail(conf)
+        await fm.send_message(message)
+    except Exception as e:
+        # Log do erro mas não falha a requisição (email em background)
+        print(f"[ERRO] Falha ao enviar email para {email_to}: {str(e)}")
+        # Em produção, use logging adequado ou serviço de monitoramento
+        raise  # Re-raise para que o erro seja visível nos logs do container
 
 
 @router.post("/forgot-password", status_code=status.HTTP_200_OK,

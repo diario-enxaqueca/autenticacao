@@ -28,9 +28,16 @@ origins = [
 if settings.FRONTEND_URL and settings.FRONTEND_URL not in origins:
     origins.append(settings.FRONTEND_URL)
 
+# Em produção, aceitar origens Railway e Vercel
+if settings.ENVIRONMENT == "production":
+    origins.extend([
+        "https://*.railway.app",
+        "https://*.vercel.app",
+    ])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=origins if settings.ENVIRONMENT != "production" else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
